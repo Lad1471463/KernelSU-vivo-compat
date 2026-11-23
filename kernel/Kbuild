@@ -6,6 +6,11 @@ kernelsu-objs += feature/sulog.o
 kernelsu-objs += feature/sucompat.o
 
 kernelsu-objs += hook/lsm_hook.o
+ifeq ($(KSU_VIVO_COMPAT),1)
+# Opt-in port of the boot-time module filter from vivo-196 (0760b7c5).
+kernelsu-objs += hook/init_module_filter.o
+ccflags-y += -DCONFIG_KSU_VIVO_COMPAT
+endif
 kernelsu-objs += hook/setuid_hook.o
 kernelsu-objs += hook/syscall_event_bridge.o
 kernelsu-objs += hook/syscall_hook_manager.o
