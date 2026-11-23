@@ -30,8 +30,8 @@ class HomeViewModel(
     private val settingsRepo: SettingsRepository = SettingsRepositoryImpl()
 ) : ViewModel() {
 
-    private val _uiState = MutableStateFlow(buildState())
-    val uiState: StateFlow<HomeUiState> = _uiState.asStateFlow()
+    private val _uiState = MutableStateFlow<HomeUiState?>(null)
+    val uiState: StateFlow<HomeUiState?> = _uiState.asStateFlow()
 
     fun refresh() {
         viewModelScope.launch {
@@ -39,7 +39,7 @@ class HomeViewModel(
             _uiState.update { baseState }
             if (baseState.checkUpdateEnabled) {
                 val latestVersionInfo = withContext(Dispatchers.IO) { checkNewVersion() }
-                _uiState.update { it.copy(latestVersionInfo = latestVersionInfo) }
+                _uiState.update { it?.copy(latestVersionInfo = latestVersionInfo) }
             }
         }
     }

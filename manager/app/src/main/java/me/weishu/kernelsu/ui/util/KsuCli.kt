@@ -54,8 +54,8 @@ data class FlashResult(val code: Int, val err: String, val showReboot: Boolean) 
 }
 
 object KsuCli {
-    val SHELL: Shell = createRootShell()
-    val GLOBAL_MNT_SHELL: Shell = createRootShell(true)
+    val SHELL: Shell by lazy(this) { createRootShell() }
+    val GLOBAL_MNT_SHELL: Shell by lazy(this) { createRootShell(true) }
 }
 
 fun getRootShell(globalMnt: Boolean = false): Shell {

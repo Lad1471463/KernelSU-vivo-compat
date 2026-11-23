@@ -2,14 +2,19 @@ package me.weishu.kernelsu.ui.screen.home
 
 import android.content.Intent
 import android.widget.Toast
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.unit.Dp
@@ -43,9 +48,9 @@ fun HomePager(
     val loadingDialog = rememberLoadingDialog()
     val scope = rememberCoroutineScope()
     val latestIsCurrentPage by rememberUpdatedState(isCurrentPage)
-    val initialResumeHandled = rememberSaveable { mutableStateOf(false) }
+    val initialResumeHandled = remember(viewModel) { mutableStateOf(false) }
 
-    var hasActivated by rememberSaveable { mutableStateOf(false) }
+    var hasActivated by remember(viewModel) { mutableStateOf(false) }
     LaunchedEffect(isCurrentPage) {
         if (isCurrentPage && !hasActivated) {
             hasActivated = true
@@ -59,6 +64,14 @@ fun HomePager(
         }
         initialResumeHandled.value = true
         onPauseOrDispose { }
+    }
+
+    val state = uiState
+    if (state == null) {
+        Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            CircularProgressIndicator()
+        }
+        return
     }
 
     val actions = HomeActions(
@@ -81,13 +94,13 @@ fun HomePager(
 
     when (LocalUiMode.current) {
         UiMode.Miuix -> HomePagerMiuix(
-            state = uiState,
+            state = state,
             actions = actions,
             bottomInnerPadding = bottomInnerPadding,
         )
 
         UiMode.Material -> HomePagerMaterial(
-            state = uiState,
+            state = state,
             actions = actions,
             bottomInnerPadding = bottomInnerPadding,
         )

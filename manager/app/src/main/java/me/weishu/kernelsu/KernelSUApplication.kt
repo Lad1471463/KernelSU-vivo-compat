@@ -5,11 +5,7 @@ import android.content.pm.ApplicationInfo
 import android.os.Build
 import android.os.UserManager
 import android.system.Os
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelStore
-import androidx.lifecycle.ViewModelStoreOwner
 import me.weishu.kernelsu.data.repository.SettingsRepositoryImpl
-import me.weishu.kernelsu.ui.viewmodel.SuperUserViewModel
 import okhttp3.Cache
 import okhttp3.OkHttpClient
 import org.lsposed.hiddenapibypass.HiddenApiBypass
@@ -18,7 +14,7 @@ import java.util.Locale
 
 lateinit var ksuApp: KernelSUApplication
 
-class KernelSUApplication : Application(), ViewModelStoreOwner {
+class KernelSUApplication : Application() {
 
     companion object {
         fun setEnableOnBackInvokedCallback(appInfo: ApplicationInfo, enable: Boolean) {
@@ -32,7 +28,6 @@ class KernelSUApplication : Application(), ViewModelStoreOwner {
     }
 
     lateinit var okhttpClient: OkHttpClient
-    private val appViewModelStore by lazy { ViewModelStore() }
 
     private fun isUserUnlocked(): Boolean =
         getSystemService(UserManager::class.java)?.isUserUnlocked == true
@@ -50,9 +45,6 @@ class KernelSUApplication : Application(), ViewModelStoreOwner {
             HiddenApiBypass.addHiddenApiExemptions("Landroid/content/pm/ApplicationInfo;->setEnableOnBackInvokedCallback")
             setEnableOnBackInvokedCallback(applicationInfo, enable)
         }
-
-        val superUserViewModel = ViewModelProvider(this)[SuperUserViewModel::class.java]
-        superUserViewModel.loadAppList()
 
         val webroot = File(dataDir, "webroot")
         if (!webroot.exists()) {
@@ -72,7 +64,4 @@ class KernelSUApplication : Application(), ViewModelStoreOwner {
                     )
                 }.build()
     }
-
-    override val viewModelStore: ViewModelStore
-        get() = appViewModelStore
 }
